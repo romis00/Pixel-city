@@ -12,8 +12,7 @@ struct CONSTANTS {
     static let instance = CONSTANTS()
     
     let regionRadius: Double = 1000
+    let pinnedRegionRadius: Double = 400
+    let pinIdentifier: String = "droppablePin"
     
-    init() {
-        
-    }
 }

@@ -37,6 +37,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     @IBAction func centerMapButtonPressed(_ sender: Any) {
         if authorizationStatus == .authorizedAlways || authorizationStatus == .authorizedWhenInUse {
             centerMapOnUser()
+            
         }
     }
     
@@ -50,8 +51,24 @@ extension MapVC: MKMapViewDelegate {
     }
     
     @objc func dropPin(sender: UITapGestureRecognizer) {
+        
+        removePin()
+        
         let touchPoint = sender.location(in: mapView)
         let touchCoorditane = mapView.convert(touchPoint, toCoordinateFrom: mapView)
+        
+        let annotation = DroppablePin(coordinate: touchCoorditane, identifier: CONSTANTS.instance.pinIdentifier)
+        mapView.addAnnotation(annotation)
+        
+        let pinnedRegion = MKCoordinateRegion(center: touchCoorditane, latitudinalMeters: CONSTANTS.instance.pinnedRegionRadius, longitudinalMeters: CONSTANTS.instance.pinnedRegionRadius)
+        mapView.setRegion(pinnedRegion, animated: true)
+        
+    }
+    
+    func removePin() {
+        for annotation in mapView.annotations {
+            mapView.removeAnnotation(annotation)
+        }
     }
 }
 
