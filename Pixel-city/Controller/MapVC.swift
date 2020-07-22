@@ -148,7 +148,7 @@ extension MapVC: MKMapViewDelegate {
         mapView.setRegion(pinnedRegion, animated: true)
         
         retrieveUrls(forAnnotation: annotation) { (true) in
-            
+            print(self.imageUrlArray)
         }
     }
     
@@ -174,7 +174,13 @@ extension MapVC: MKMapViewDelegate {
         imageUrlArray = []
 
         AF.request(CONSTANTS.instance.flickrURL(forApiKey: CONSTANTS.instance.apiKey, withAnnotation: annotation, andNumberOfPhotos: 40)).responseJSON { (response) in
-            print(response)
+            guard let json = response.value as? Dictionary<String, AnyObject> else { return }
+            let photoDictionary = json["photos"] as! Dictionary<String, AnyObject>
+            let photosDictionaryArray = photoDictionary["photo"] as! [Dictionary<String, AnyObject>]
+            for photo in photosDictionaryArray {
+                let postUrl = "https://farm\(photo["farm"]!).staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_b_d.jpg"
+                self.imageUrlArray.append(postUrl)
+            }
             handler(true)
         }
         
