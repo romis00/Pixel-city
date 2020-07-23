@@ -19,9 +19,13 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     var collectionView: UICollectionView?
     var flowLayout = UICollectionViewFlowLayout()
+    
     var imageUrlArray = [String]()
+    var imageArray = [UIImage]()
     
     var screenSize = UIScreen.main.bounds
+    
+    var pinCoordinate: CLLocationCoordinate2D!
     
 
     @IBOutlet weak var mapView: MKMapView!
@@ -46,6 +50,8 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         
         collectionView?.backgroundColor = UIColor.white
         
+        registerForPreviewing(with: self, sourceView: collectionView!)
+        
         photosView.addSubview(collectionView!)
     }
     
@@ -69,11 +75,19 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     @objc func animateViewDown() {
+        cancelAllSessions()
         pullUpViewHeightConstraint.constant = 1
         
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
+        
+        let coordinateRegion = MKCoordinateRegion(center: pinCoordinate, latitudinalMeters: CONSTANTS.instance.regionRadius * 2, longitudinalMeters: CONSTANTS.instance.regionRadius * 2)
+        mapView.setRegion(coordinateRegion, animated: true)
+        
+        imageUrlArray = []
+        imageArray = []
+        collectionView?.reloadData()
     }
 
     
@@ -87,11 +101,10 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     }
     func addProgressLbl() {
         progressLabel = UILabel()
-        progressLabel?.frame = CGRect(x: (screenSize.width / 2) - 120, y: 180, width: 200, height: 40)
-        progressLabel?.font = UIFont(name: "Avenir Next", size: 18)
+        progressLabel?.frame = CGRect(x: (screenSize.width / 2) - 100, y: 180, width: 200, height: 40)
+        progressLabel?.font = UIFont(name: "Avenir Next", size: 14)
         progressLabel?.textColor = #colorLiteral(red: 0.05882352963, green: 0.180392161, blue: 0.2470588237, alpha: 1)
         progressLabel?.textAlignment = .center
-        progressLabel?.text = "Downloading"
         collectionView?.addSubview(progressLabel!)
     }
     
@@ -126,10 +139,16 @@ extension MapVC: MKMapViewDelegate {
     }
     
     @objc func dropPin(sender: UITapGestureRecognizer) {
-        
+                
         removePin()
         removeSpinner()
         removeProgressLbl()
+        
+        imageUrlArray = []
+        imageArray = []
+        collectionView?.reloadData()
+        
+        cancelAllSessions()
         
         animateViewUp()
         addSwipeDown()
@@ -138,17 +157,26 @@ extension MapVC: MKMapViewDelegate {
         
         let touchPoint = sender.location(in: mapView)
         let touchCoorditane = mapView.convert(touchPoint, toCoordinateFrom: mapView)
+        pinCoordinate = touchCoorditane
         
         let annotation = DroppablePin(coordinate: touchCoorditane, identifier: CONSTANTS.instance.pinIdentifier)
         mapView.addAnnotation(annotation)
         
-        print(CONSTANTS.instance.flickrURL(forApiKey: CONSTANTS.instance.apiKey, withAnnotation: annotation, andNumberOfPhotos: 40))
         
         let pinnedRegion = MKCoordinateRegion(center: touchCoorditane, latitudinalMeters: CONSTANTS.instance.pinnedRegionRadius, longitudinalMeters: CONSTANTS.instance.pinnedRegionRadius)
         mapView.setRegion(pinnedRegion, animated: true)
         
-        retrieveUrls(forAnnotation: annotation) { (true) in
-            print(self.imageUrlArray)
+        retrieveUrls(forAnnotation: annotation) { finished in
+            if finished {
+                self.retrieveImages( handler: { finished in
+                    if finished {
+                        self.removeSpinner()
+                        self.removeProgressLbl()
+                        
+                        self.collectionView?.reloadData()
+                    }
+                })
+            }
         }
     }
     
@@ -173,17 +201,41 @@ extension MapVC: MKMapViewDelegate {
     func retrieveUrls(forAnnotation annotation: DroppablePin, handler: @escaping (_ status: Bool) -> ()) {
         imageUrlArray = []
 
-        AF.request(CONSTANTS.instance.flickrURL(forApiKey: CONSTANTS.instance.apiKey, withAnnotation: annotation, andNumberOfPhotos: 40)).responseJSON { (response) in
+        AF.request(CONSTANTS.instance.flickrURL(forApiKey: CONSTANTS.instance.apiKey, withAnnotation: annotation, andNumberOfPhotos: 35)).responseJSON { (response) in
             guard let json = response.value as? Dictionary<String, AnyObject> else { return }
             let photoDictionary = json["photos"] as! Dictionary<String, AnyObject>
             let photosDictionaryArray = photoDictionary["photo"] as! [Dictionary<String, AnyObject>]
             for photo in photosDictionaryArray {
-                let postUrl = "https://farm\(photo["farm"]!).staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_b_d.jpg"
+//                let postUrl = "https://farm\(photo["farm"]!).staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_b_d.jpg"
+//                self.imageUrlArray.append(postUrl)
+                //https://live.staticflickr.com/\(obj["server"]!)/\(obj["id"]!)_\(obj["secret"]!)_b_d.jpg"
+                let postUrl = "https://live.staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_b_d.jpg"
                 self.imageUrlArray.append(postUrl)
             }
             handler(true)
         }
+    }
+    func retrieveImages(handler: @escaping (_ status: Bool) -> ()) {
+        imageArray = []
         
+        for url in imageUrlArray {
+            AF.request(url).responseImage(completionHandler: { response in
+                guard let image = response.value else { return }
+                self.imageArray.append(image)
+                self.progressLabel?.text = "\(self.imageArray.count)/35 IMAGES DOWNLOADED"
+                
+                if self.imageArray.count == self.imageUrlArray.count {
+                    handler(true)
+                }
+            })
+        }
+    }
+    
+    func cancelAllSessions() {
+        Alamofire.Session.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+            sessionDataTask.forEach({ $0.cancel() })
+            downloadData.forEach({ $0.cancel() })
+        }
     }
         
 }
@@ -208,11 +260,38 @@ extension MapVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         //number of items
-        return 4
+        return imageArray.count
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CONSTANTS.instance.cellIdentifier, for: indexPath) as? PhotoCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CONSTANTS.instance.cellIdentifier, for: indexPath) as? PhotoCell else { return UICollectionViewCell()}
         
-        return cell!
+        let imageFormIndex = imageArray[indexPath.row]
+        let imageView = UIImageView(image: imageFormIndex)
+        imageView.contentMode = UIView.ContentMode.scaleAspectFill
+        cell.addSubview(imageView)
+        
+        return cell
+    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let popVC = storyboard?.instantiateViewController(identifier: CONSTANTS.instance.popVCIdentivier) as? _DPopVC else { return }
+        popVC.initpassedImage(forImage: imageArray[indexPath.row])
+        present(popVC, animated: true, completion: nil)
+    }
+}
+
+extension MapVC: UIViewControllerPreviewingDelegate {
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        guard let indexPath = collectionView?.indexPathForItem(at: location), let cell = collectionView?.cellForItem(at: indexPath) else { return nil}
+        
+        guard let popVC = storyboard?.instantiateViewController(identifier: CONSTANTS.instance.popVCIdentivier) as? _DPopVC else { return nil }
+        
+        popVC.initpassedImage(forImage: imageArray[indexPath.row])
+        
+        previewingContext.sourceRect = cell.contentView.frame
+        
+        return popVC
+    }
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        show(viewControllerToCommit, sender: self)
     }
 }

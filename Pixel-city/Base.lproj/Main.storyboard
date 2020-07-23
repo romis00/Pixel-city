@@ -85,6 +85,55 @@
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="129.91071428571428"/>
         </scene>
+        <!--PopVC-->
+        <scene sceneID="XCO-EA-eRs">
+            <objects>
+                <viewController storyboardIdentifier="PopVCIdentifier" id="wwZ-yS-NwG" customClass="_DPopVC" customModule="Pixel_city" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="G9g-B2-drz">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kwF-GT-EFi">
+                                <rect key="frame" x="132" y="817" width="150" height="25"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Double Tap to Dismiss" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rpQ-ZS-UP2">
+                                        <rect key="frame" x="10" y="3.5" width="130" height="18"/>
+                                        <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="13"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstItem="rpQ-ZS-UP2" firstAttribute="centerX" secondItem="kwF-GT-EFi" secondAttribute="centerX" id="IlE-Xl-xwW"/>
+                                    <constraint firstItem="rpQ-ZS-UP2" firstAttribute="centerY" secondItem="kwF-GT-EFi" secondAttribute="centerY" id="JCY-mK-buW"/>
+                                    <constraint firstAttribute="height" constant="25" id="Wzu-hP-AaC"/>
+                                    <constraint firstAttribute="width" constant="150" id="cMz-5k-u5P"/>
+                                </constraints>
+                            </view>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="406-EN-k20">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="bif-GS-Hgc" firstAttribute="bottom" secondItem="406-EN-k20" secondAttribute="bottom" id="E0Z-Yv-RfG"/>
+                            <constraint firstItem="kwF-GT-EFi" firstAttribute="centerX" secondItem="G9g-B2-drz" secondAttribute="centerX" id="TjI-kC-nfP"/>
+                            <constraint firstItem="406-EN-k20" firstAttribute="leading" secondItem="bif-GS-Hgc" secondAttribute="leading" id="W1I-YD-NO0"/>
+                            <constraint firstItem="bif-GS-Hgc" firstAttribute="bottom" secondItem="kwF-GT-EFi" secondAttribute="bottom" constant="20" id="pyw-fj-LiT"/>
+                            <constraint firstItem="406-EN-k20" firstAttribute="top" secondItem="bif-GS-Hgc" secondAttribute="top" id="vWW-9H-ULb"/>
+                            <constraint firstItem="bif-GS-Hgc" firstAttribute="trailing" secondItem="406-EN-k20" secondAttribute="trailing" id="xfo-MJ-nfR"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="bif-GS-Hgc"/>
+                    </view>
+                    <connections>
+                        <outlet property="popImageView" destination="406-EN-k20" id="yrS-94-oEV"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XF4-8z-cjt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1099" y="130"/>
+        </scene>
     </scenes>
     <resources>
         <image name="locationButton" width="67" height="67"/>

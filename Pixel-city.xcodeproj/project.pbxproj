@@ -16,6 +16,7 @@
 		3021439724C5E29D00880240 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3021439624C5E29D00880240 /* Constants.swift */; };
 		3021439924C76C7E00880240 /* DroppablePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3021439824C76C7E00880240 /* DroppablePin.swift */; };
 		3055D2EF24C85BE3004DF460 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3055D2EE24C85BE3004DF460 /* PhotoCell.swift */; };
+		30BCDEDE24C9B09D00C7E626 /* 3DPopVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30BCDEDD24C9B09D00C7E626 /* 3DPopVC.swift */; };
 		4DD20822FF639086776D55A9 /* Pods_Pixel_city.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CA9D94888E0AE511298CE75 /* Pods_Pixel_city.framework */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,7 @@
 		3021439624C5E29D00880240 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		3021439824C76C7E00880240 /* DroppablePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DroppablePin.swift; sourceTree = "<group>"; };
 		3055D2EE24C85BE3004DF460 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		30BCDEDD24C9B09D00C7E626 /* 3DPopVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3DPopVC.swift; sourceTree = "<group>"; };
 		5CA9D94888E0AE511298CE75 /* Pods_Pixel_city.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Pixel_city.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		96488BFC71CC9A90CCEBF63F /* Pods-Pixel-city.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Pixel-city.release.xcconfig"; path = "Target Support Files/Pods-Pixel-city/Pods-Pixel-city.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -87,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				3021438224C5D5A200880240 /* MapVC.swift */,
+				30BCDEDD24C9B09D00C7E626 /* 3DPopVC.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 				3021438324C5D5A200880240 /* MapVC.swift in Sources */,
 				3021437F24C5D5A200880240 /* AppDelegate.swift in Sources */,
 				3021439924C76C7E00880240 /* DroppablePin.swift in Sources */,
+				30BCDEDE24C9B09D00C7E626 /* 3DPopVC.swift in Sources */,
 				3021438124C5D5A200880240 /* SceneDelegate.swift in Sources */,
 				3055D2EF24C85BE3004DF460 /* PhotoCell.swift in Sources */,
 				3021439724C5E29D00880240 /* Constants.swift in Sources */,

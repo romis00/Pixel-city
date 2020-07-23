@@ -12,11 +12,12 @@ struct CONSTANTS {
     static let instance = CONSTANTS()
     
     let regionRadius: Double = 1000
-    let pinnedRegionRadius: Double = 400
+    let pinnedRegionRadius: Double = 200
     let mapViewMoveUpFor: Double = 300
     
     let pinIdentifier: String = "droppablePin"
     let cellIdentifier: String = "photoCell"
+    let popVCIdentivier: String = "PopVCIdentifier"
     
     let apiKey = "d14825f5485f15ff57483a856908e7da"
     
