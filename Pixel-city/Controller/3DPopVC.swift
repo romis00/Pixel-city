@@ -7,15 +7,22 @@
 //
 
 import UIKit
+import MapKit
 
 class _DPopVC: UIViewController, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var popImageView: UIImageView!
+    @IBOutlet weak var titleLbl: UILabel!
+    @IBOutlet weak var miniMap: MKMapView!
     
     var passedImage: UIImage!
+    var passedTitle: String!
+    var passedLocation: CLLocationCoordinate2D!
     
-    func initpassedImage(forImage image: UIImage) {
+    func initpassedData(forImage image: UIImage, forTitle title: String, forLocation location: CLLocationCoordinate2D) {
         self.passedImage = image
+        self.passedTitle = title
+        self.passedLocation = location
     }
     
     override func viewDidLoad() {
@@ -23,6 +30,9 @@ class _DPopVC: UIViewController, UIGestureRecognizerDelegate {
         addDoubleTap()
         
         popImageView.image = passedImage
+        titleLbl.text = passedTitle
+        locateMiniMapForPinnedLocation()
+        addPin()
     }
     
     func addDoubleTap() {
@@ -36,5 +46,16 @@ class _DPopVC: UIViewController, UIGestureRecognizerDelegate {
     @objc func screenWasDpubleTapped() {
         dismiss(animated: true, completion: nil)
     }
+    
+    func locateMiniMapForPinnedLocation() {
+        let coordinateRegion = MKCoordinateRegion(center: passedLocation, latitudinalMeters: CONSTANTS.instance.miniMapRegionRadius, longitudinalMeters: CONSTANTS.instance.miniMapRegionRadius)
+        miniMap.setRegion(coordinateRegion, animated: true)
+    }
+    
+    func addPin() {
+        let annotation = DroppablePin(coordinate: passedLocation, identifier: CONSTANTS.instance.miniMapPinIdentifier)
+        miniMap.addAnnotation(annotation)
+    }
+    
     
 }

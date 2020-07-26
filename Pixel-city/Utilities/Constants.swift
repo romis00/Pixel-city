@@ -15,7 +15,10 @@ struct CONSTANTS {
     let pinnedRegionRadius: Double = 200
     let mapViewMoveUpFor: Double = 300
     
+    let miniMapRegionRadius: Double = 300
+    
     let pinIdentifier: String = "droppablePin"
+    let miniMapPinIdentifier: String = "miniMapDroppablePin"
     let cellIdentifier: String = "photoCell"
     let popVCIdentivier: String = "PopVCIdentifier"
     

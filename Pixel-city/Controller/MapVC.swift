@@ -22,6 +22,8 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     var imageUrlArray = [String]()
     var imageArray = [UIImage]()
+    var imageNameArray = [String]()
+    
     
     var screenSize = UIScreen.main.bounds
     
@@ -82,11 +84,16 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
             self.view.layoutIfNeeded()
         }
         
-        let coordinateRegion = MKCoordinateRegion(center: pinCoordinate, latitudinalMeters: CONSTANTS.instance.regionRadius * 2, longitudinalMeters: CONSTANTS.instance.regionRadius * 2)
-        mapView.setRegion(coordinateRegion, animated: true)
+        if pinCoordinate != nil {
+            let coordinateRegion = MKCoordinateRegion(center: pinCoordinate, latitudinalMeters: CONSTANTS.instance.regionRadius * 2, longitudinalMeters: CONSTANTS.instance.regionRadius * 2)
+            mapView.setRegion(coordinateRegion, animated: true)
+        }
+        
         
         imageUrlArray = []
         imageArray = []
+        imageNameArray = []
+        
         collectionView?.reloadData()
     }
 
@@ -146,6 +153,7 @@ extension MapVC: MKMapViewDelegate {
         
         imageUrlArray = []
         imageArray = []
+        imageNameArray = []
         collectionView?.reloadData()
         
         cancelAllSessions()
@@ -206,11 +214,20 @@ extension MapVC: MKMapViewDelegate {
             let photoDictionary = json["photos"] as! Dictionary<String, AnyObject>
             let photosDictionaryArray = photoDictionary["photo"] as! [Dictionary<String, AnyObject>]
             for photo in photosDictionaryArray {
-//                let postUrl = "https://farm\(photo["farm"]!).staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_b_d.jpg"
-//                self.imageUrlArray.append(postUrl)
-                //https://live.staticflickr.com/\(obj["server"]!)/\(obj["id"]!)_\(obj["secret"]!)_b_d.jpg"
+                
+//https://live.staticflickr.com/\(obj["server"]!)/\(obj["id"]!)_\(obj["secret"]!)_b_d.jpg"
+                
                 let postUrl = "https://live.staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_b_d.jpg"
                 self.imageUrlArray.append(postUrl)
+            }
+            
+            for picture in photosDictionaryArray {
+                if picture["title"]  == nil {
+                    self.imageNameArray.append("")
+                }
+                else {
+                self.imageNameArray.append(picture["title"] as! String)
+                }
             }
             handler(true)
         }
@@ -263,6 +280,7 @@ extension MapVC: UICollectionViewDelegate, UICollectionViewDataSource {
         return imageArray.count
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CONSTANTS.instance.cellIdentifier, for: indexPath) as? PhotoCell else { return UICollectionViewCell()}
         
         let imageFormIndex = imageArray[indexPath.row]
@@ -274,7 +292,7 @@ extension MapVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let popVC = storyboard?.instantiateViewController(identifier: CONSTANTS.instance.popVCIdentivier) as? _DPopVC else { return }
-        popVC.initpassedImage(forImage: imageArray[indexPath.row])
+        popVC.initpassedData(forImage: imageArray[indexPath.row], forTitle: imageNameArray[indexPath.row], forLocation: pinCoordinate)
         present(popVC, animated: true, completion: nil)
     }
 }
@@ -285,7 +303,7 @@ extension MapVC: UIViewControllerPreviewingDelegate {
         
         guard let popVC = storyboard?.instantiateViewController(identifier: CONSTANTS.instance.popVCIdentivier) as? _DPopVC else { return nil }
         
-        popVC.initpassedImage(forImage: imageArray[indexPath.row])
+        popVC.initpassedData(forImage: imageArray[indexPath.row], forTitle: imageNameArray[indexPath.row], forLocation: pinCoordinate)
         
         previewingContext.sourceRect = cell.contentView.frame
         
