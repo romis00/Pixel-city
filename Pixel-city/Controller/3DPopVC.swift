@@ -27,6 +27,8 @@ class _DPopVC: UIViewController, UIGestureRecognizerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        miniMap.delegate = self
+        
         addDoubleTap()
         
         popImageView.image = passedImage
@@ -58,4 +60,13 @@ class _DPopVC: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
+}
+
+extension _DPopVC: MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let newPin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: CONSTANTS.instance.miniMapPinIdentifier)
+        newPin.pinTintColor = #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
+        newPin.animatesDrop = true
+        return newPin
+    }
 }
